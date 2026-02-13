@@ -65,12 +65,6 @@ jobs:
           fi
         working-directory: ${{ github.repository_owner }}-${{ github.event.repository.name }}-${{ env.PROJECT_DIR }}
 
-      # 步骤 5.5: 安装 Playwright 浏览器
-      - name: 🌐 安装 Playwright 浏览器
-        run: |
-          python -m playwright install chromium
-        working-directory: ${{ github.repository_owner }}-${{ github.event.repository.name }}-${{ env.PROJECT_DIR }}
-
       # 步骤 6: 添加随机延迟
       - name: ⏳ 添加随机延迟
         run: |
@@ -88,7 +82,7 @@ jobs:
           #账号密码登录模式暂时不好用
           #WEIRDHOST_EMAIL: ${{ secrets.WEIRDHOST_EMAIL }}
           #WEIRDHOST_PASSWORD: ${{ secrets.WEIRDHOST_PASSWORD }}
-          
+
           WEIRDHOST_TG_BOT_TOKEN: ${{ secrets.WEIRDHOST_TG_BOT_TOKEN }}
           WEIRDHOST_TG_CHAT_ID: ${{ secrets.WEIRDHOST_TG_CHAT_ID }}
           # github 必须放true--->浏览器在后台无界面运行
