@@ -77,14 +77,12 @@ jobs:
         run: |
           if [ -n "${{ secrets.HY2_PROXY_URL }}" ]; then
             echo "安装 Hysteria2..."
-            sudo apt-get update
-            sudo apt-get install -y curl
-            curl -fsSL https://get.hy2.sh/ | bash
-            if command -v hysteria &> /dev/null; then
-              echo "✅ Hysteria2 安装完成"
-            else
-              echo "⚠️ Hysteria2 安装可能失败，脚本将使用直连模式"
-            fi
+            curl -L -o hysteria \
+              https://github.com/apernet/hysteria/releases/latest/download/hysteria-linux-amd64
+            chmod +x hysteria
+            sudo mv hysteria /usr/local/bin/hysteria
+            hysteria version
+            echo "✅ Hysteria2 安装完成"
           else
             echo "⚠️ 未配置代理，跳过 Hysteria2 安装"
           fi
