@@ -1,4 +1,4 @@
-name: 🔄 KataBump Auto Renew
+name: 🔄 Katabump Auto Renew
 
 on:
   # 手动触发
@@ -6,8 +6,8 @@ on:
   
   # 定时触发
   schedule:
-    # UTC 00:12 (北京时间 08:12)
-    - cron: "12 0 * * *"
+    # UTC 00:11 (北京时间 08:11) 每天
+    - cron: "11 0 * * *"
 
 # 权限配置：允许提交和推送更改
 permissions:
@@ -18,9 +18,9 @@ jobs:
     runs-on: ubuntu-latest
     timeout-minutes: 30
     env:
-      PROJECT_DIR: katabump
+      PROJECT_DIR: kata
       SCRIPT_NAME: kataBump_renew_batch.py
-      SCRIPT_DESC: KataBump 续期脚本
+      SCRIPT_DESC: Katabump 续期脚本
     
     steps:
       # 步骤 1: 检出公开仓库
@@ -36,7 +36,7 @@ jobs:
       - name: 🔐 检出私有仓库
         uses: actions/checkout@v4
         with:
-          repository: jyucoeng/auto_kataBump_private
+          repository: jyucoeng/auto_login_lunes_private
           token: ${{ secrets.PRIVATE_REPO_TOKEN }}
           ref: main
           path: ${{ github.repository_owner }}-${{ github.event.repository.name }}-${{ env.PROJECT_DIR }}
@@ -72,6 +72,21 @@ jobs:
           python -m playwright install chromium
         working-directory: ${{ github.repository_owner }}-${{ github.event.repository.name }}-${{ env.PROJECT_DIR }}
 
+      # 步骤 5.6: 安装 Hysteria2（如果需要代理）
+      - name: 📡 安装 Hysteria2
+        run: |
+          if [ -n "${{ secrets.HY2_PROXY_URL }}" ]; then
+            echo "安装 Hysteria2..."
+            curl -L -o hysteria \
+              https://github.com/apernet/hysteria/releases/latest/download/hysteria-linux-amd64
+            chmod +x hysteria
+            sudo mv hysteria /usr/local/bin/hysteria
+            hysteria version
+            echo "✅ Hysteria2 安装完成"
+          else
+            echo "⚠️ 未配置代理，跳过 Hysteria2 安装"
+          fi
+
       # 步骤 6: 添加随机延迟
       - name: ⏳ 添加随机延迟
         run: |
@@ -82,16 +97,19 @@ jobs:
       # 步骤 7: 执行脚本
       - name: 🚀 执行 ${{ env.SCRIPT_DESC }}
         env:
-          KATABUMP_BATCH: ${{ secrets.KATABUMP_ACCOUNTS_BATCH }}
+          KATABUMP_BATCH: ${{ secrets.KATABUMP_BATCH }}
+          HY2_PROXY_URL: ${{ secrets.HY2_PROXY_URL }}
+          SOCKS_PORT: ${{ secrets.SOCKS_PORT || '51080' }}
+          SCREENSHOT_DIR: ${{ github.repository_owner }}-${{ github.event.repository.name }}-${{ env.PROJECT_DIR }}/screenshots
         run: xvfb-run -a python ${{ env.SCRIPT_NAME }}
         working-directory: ${{ github.repository_owner }}-${{ github.event.repository.name }}-${{ env.PROJECT_DIR }}
 
-      # 步骤 8: 上传截图到 artifacts，7天内可下载压缩包
+      # 步骤 8: 上传截图到 artifacts，7天内可下载压缩包，你可以自己改这个数字7
       - name: 📸 上传截图到 artifacts
         if: always()
         uses: actions/upload-artifact@v4
         with:
-          name: katabump-screenshots
+          name: kata-screenshots
           path: ${{ github.repository_owner }}-${{ github.event.repository.name }}-${{ env.PROJECT_DIR }}/screenshots
           retention-days: 7
           if-no-files-found: warn
@@ -115,13 +133,13 @@ jobs:
         run: |
           git config user.name "github-actions[bot]"
           git config user.email "github-actions[bot]@users.noreply.github.com"
-          mkdir -p katabump && echo "$(date +'%Y-%m-%d %H:%M:%S')" > katabump/time.txt
-          git add katabump/time.txt 2>/dev/null || true
+          mkdir -p kata && echo "$(date +'%Y-%m-%d %H:%M:%S')" > kata/time.txt
+          git add kata/time.txt 2>/dev/null || true
           if git diff --cached --quiet; then
             echo "无变化，无需提交"
           else
             TIMESTAMP=$(date +'%Y-%m-%d %H:%M:%S')
-            git commit -m "⏱️ 更新 katabump 时间文件: $TIMESTAMP"
+            git commit -m "⏱️ 更新 kata 时间文件: $TIMESTAMP"
             git fetch origin main
             git push -f origin HEAD:main
             echo "✅ 更改已推送"
