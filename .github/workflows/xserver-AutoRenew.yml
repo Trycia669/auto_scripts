@@ -56,7 +56,7 @@ jobs:
       - name: 📦 安装系统依赖
         run: |
           sudo apt-get update
-          sudo apt-get install -y xvfb fonts-noto-cjk fonts-noto-cjk-extra
+          sudo apt-get install -y xvfb fonts-noto-cjk
 
       # 步骤 5: 安装 Python 依赖
       - name: 📚 安装 Python 依赖
