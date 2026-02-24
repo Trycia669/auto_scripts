@@ -42,6 +42,21 @@ jobs:
         working-directory: scripts
         run: pip install -r requirements.txt -q > /dev/null 2>&1
 
+      # 步骤 5.5: 安装 Hysteria2（如果需要代理）
+      - name: 📡 安装 Hysteria2
+        run: |
+          if [ -n "${{ secrets.HY2_PROXY_URL }}" ]; then
+            echo "安装 Hysteria2..."
+            curl -L -o hysteria \
+              https://github.com/apernet/hysteria/releases/latest/download/hysteria-linux-amd64
+            chmod +x hysteria
+            sudo mv hysteria /usr/local/bin/hysteria
+            hysteria version
+            echo "✅ Hysteria2 安装完成"
+          else
+            echo "⚠️ 未配置代理，跳过 Hysteria2 安装"
+          fi
+
       - name: Run renew script
         working-directory: scripts
         env:
@@ -49,6 +64,8 @@ jobs:
           TELEGRAM_BOT_TOKEN: ${{ secrets.WEIRDHOST_TG_BOT_TOKEN }}
           TELEGRAM_CHAT_ID: ${{ secrets.WEIRDHOST_TG_CHAT_ID }}
           REMEMBER_WEB_COOKIE: ${{ secrets.WEIRDHOST_REMEMBER_WEB_COOKIE }}
+          HY2_PROXY_URL: ${{ secrets.HY2_PROXY_URL }}
+          SOCKS_PORT: ${{ secrets.SOCKS_PORT || '51080' }}
         run: python kr-renew.py
 
       # ===============================
