@@ -1,43 +1,44 @@
-# auto_weirdhost  kr的ck登录续期
+
+# auto_xserver_public   自动续期脚本
 
 
-你需要做以下修改：
+## 1、你需要在仓库 Settings → Secrets and variables → Actions → Secrets 里新增：
 
+- PRIVATE_REPO_TOKEN （用于读取私库的 token，可共用）
 
-## 1、设置环境变量，环境变量格式如下：
+- XSERVER_GAME_EMAIL （XServer GAME 脚本需要的账号）
 
-- WEIRDHOST_TG_BOT_TOKEN  (可选)
-- WEIRDHOST_TG_CHAT_ID     (可选)
+- XSERVER_GAME_PASSWORD （XServer GAME 脚本需要的密码）
 
-以下为必填
-- PRIVATE_REPO_TOKEN （用于读取私库的 token，可跟其他库共用）
+- XSERVER_GAME_TELEGRAM_BOT_TOKEN （可选，用于 Telegram 通知）
 
-- WEIRDHOST_REMEMBER_WEB_COOKIE 具体值如下
+- XSERVER_GAME_TELEGRAM_CHAT_ID （可选，用于 Telegram 通知）
 
-  <img width="1577" height="570" alt="CleanShot 2026-02-14 at 20 27 03" src="https://github.com/user-attachments/assets/3e395d6f-f9b1-41bb-9136-9cb7835110e5" />
+### 代理配置（可选）
 
+- HY2_PROXY_URL （可选，Hysteria2 代理 URL）
 
+```
+HY2_PROXY_URL=hysteria2://[uuid]@[host]:[port]?sni=xxx&insecure=1&alpn=h3
+```
+### 如果不设置此环境变量，脚本将使用直连模式
 
+- SOCKS_PORT （可选，SOCKS5 端口，默认 51080）
+
+```
+SOCKS_PORT='51080'
+```
+### 仅在设置了 HY2_PROXY_URL 时生效
 
 
 ## 2、开放自动写time.txt的文件权限。
 ### 这个主要是用于规避github 默认60天的仓库代码没有任何变动就会自动给你发邮件并且自动禁用action的定时任务。
 
-GITHUB_TOKEN 不用你手动创建 —— 只要你的 workflow 在 GitHub Actions 里跑起来，GitHub 会自动为每次运行生成一个临时的 secrets.GITHUB_TOKEN，在 workflow 里直接用就行（你已经在用 ${{ secrets.GITHUB_TOKEN }} 了）。
+GITHUB_TOKEN 不用你手动创建 —— 只要你的 workflow 在 GitHub Actions 里跑起来，GitHub 会自动为每次运行生成一个临时的 token，在 workflow 里直接用就行。
 
 ### 你需要做的通常是 给它权限、以及确认 checkout 会把它用在 push 上。
 
-1) 你不需要创建：它默认就存在,在 workflow 里这样写就能用：
-```
-env:
-  GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-
-```
-
-这个 secrets.GITHUB_TOKEN 是 GitHub 自动注入的，不会出现在 “Secrets” 列表里让你手动建。
-
-
-2) 你需要设置的地方：给它写权限
+1) 你需要设置的地方：给它写权限
 
 到仓库：
 
@@ -47,9 +48,32 @@ env:
 
 ✅ Read and write permissions
 
+然后保存
+
+## 3、关闭网站里的账号敏感通知。
+3.1） 打开小日子游戏机网页登录地址进行登录
 
 
-## 3、修改定时任务执行时间。
-### weirdhost-AutoRenew.yml里面修改你的定时任务的执行时间
+<img width="702" height="462" alt="CleanShot 2026-02-10 at 08 10 04" src="https://github.com/user-attachments/assets/33f2e9d3-0ba5-40e8-bbdb-6d106d2c7d42" />
+
+<img width="1096" height="270" alt="CleanShot 2026-02-10 at 08 14 08" src="https://github.com/user-attachments/assets/42b41c6c-ccb0-4213-9660-cbda2f4908fa" />
+
+
+
+## 4、修改定时任务执行时间。
+### main.yml里面修改你的定时任务的执行时间（建议根据你自己下面的到期时间去调整定时。）
+
+<img width="581" height="105" alt="CleanShot 2026-02-10 at 08 15 53" src="https://github.com/user-attachments/assets/c5ff16ab-842b-48b0-a09b-f2137f199f4c" />
+
+
+
+
+
+
+
+
+
+
+
 
 
