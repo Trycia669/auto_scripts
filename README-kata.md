@@ -8,7 +8,7 @@
 
 - PRIVATE_REPO_TOKEN （用于读取私库的 token，可跟其他库共用）
 
-- KATABUMP_BATCH （katabump 的账号环境变量）
+- KATABUMP_ACCOUNTS_BATCH （katabump 的账号环境变量）
 
 ```
 KATABUMP_BATCH='a1@example.com,pass1,218445
