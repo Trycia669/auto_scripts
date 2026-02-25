@@ -57,6 +57,7 @@ jobs:
       # 步骤 5: 安装 Python 依赖
       - name: 📚 安装 Python 依赖
         run: |
+          pip install requests seleniumbase pyvirtualdisplay
           if [ -f requirements.txt ]; then
             pip install -r requirements.txt
           else
