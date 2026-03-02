@@ -1,5 +1,9 @@
-Runner repo: Trycia669/auto_scripts | Run ID: 22562848320 | UTC: 2026-03-02 05:34:35
+Runner repo: Trycia669/auto_scripts | Run ID: 22588938287 | UTC: 2026-03-02 18:03:55
 
-# XServer 续期报告
+**最后运行时间**: `2026-03-03 02:03:43`
 
-脚本未生成报告文件
+**运行结果**: <br>
+🖥️服务器:`🇯🇵Xserver(MC)`<br>
+📊续期结果:✅Success<br>
+🕛️旧到期时间: `2026-03-03`<br>
+🕡️新到期时间: `2026-03-06 03:37`<br>
