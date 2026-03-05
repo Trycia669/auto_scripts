@@ -6,7 +6,7 @@ on:
   
   # 定时触发
   schedule:
-    - cron: "32 3 * * *"
+    - cron: "0 20 * * 0"
 
 # 权限配置：允许提交和推送更改
 permissions:
@@ -60,9 +60,8 @@ jobs:
           if [ -f requirements.txt ]; then
             pip install -r requirements.txt
           else
-            pip install requests playwright pyvirtualdisplay
+            pip install requests seleniumbase pyvirtualdisplay
           fi
-          playwright install chromium
 
       # 步骤 5: 安装 Hysteria2（如果需要代理）
       - name: 📡 安装 Hysteria2
