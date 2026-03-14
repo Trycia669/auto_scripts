@@ -2,7 +2,7 @@
 
 需要通过下面的链接入群组，然后才能创建account，进而创建 game server。
 
-![点此邀请进入](https://discord.com/invite/YJhY4NqaKU)
+https://discord.com/invite/YJhY4NqaKU
 
 你需要做以下修改：
 
