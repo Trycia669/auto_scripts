@@ -1,4 +1,4 @@
-name: 🔄 FreezeHost Auto Renew
+name: 🔄 FreezeHost Auto Renew 修改中，未完成
 on:
   schedule:
     - cron: '23 1 */2 * *'
