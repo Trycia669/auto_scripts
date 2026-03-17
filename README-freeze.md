@@ -75,6 +75,7 @@ hysteria2://mypassword@proxy.example.com:443?sni=proxy.example.com&insecure=0&al
 ```yaml
 permissions:
   contents: write
+  workflows: write
 ```
 
 ### 6️⃣ 启用 Actions
@@ -92,10 +93,17 @@ GitHub Actions 工作流需要以下权限：
 | 权限 | 说明 | 用途 |
 |---|---|---|
 | `contents: write` | 读写仓库内容 | 提交执行时间到仓库、上传工件 |
+| `workflows: write` | 修改工作流文件 | 允许工作流推送更改（包括工作流文件本身） |
 
 **配置方式**：
 1. 在 `.github/workflows/freeze-AutoRenew.yml` 中已配置（推荐）
 2. 或在仓库 Settings → Actions → General → Workflow permissions 中选择 **Read and write permissions**
+
+```yaml
+permissions:
+  contents: write
+  workflows: write
+```
 
 ## 🕐 运行时间
 
