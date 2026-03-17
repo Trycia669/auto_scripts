@@ -28,10 +28,11 @@ concurrency:
 
 permissions:
   contents: write
+  workflows: write
 
 jobs:
   renew:
-    name: 🔄 执行续期
+    name: 🔄 执行FreezeHost自动续期
     runs-on: ubuntu-latest
     timeout-minutes: 30
     steps:
