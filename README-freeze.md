@@ -17,7 +17,7 @@ auto_scripts/                      # 公开仓库
 ### 1️⃣ 创建仓库
   
 - **公开仓库**：
-  - 包含 `.github/workflows/freeze-AutoRenew.yml`、`README.md`
+  - 包含 `.github/workflows/freeze-AutoRenew.yml`、`README-freeze.md`
 
 ### 2️⃣ 添加 GitHub Secrets
 
