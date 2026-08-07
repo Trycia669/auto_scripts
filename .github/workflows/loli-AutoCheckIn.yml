@@ -19,8 +19,6 @@ jobs:
     env:
       #格式:email,password,tg_token,tg_chat
       LOLI_BATCH: ${{ secrets.LOLI_BATCH }}
-      #格式:email,password,tg_token,tg_chat
-      LOLI_BATCH: ${{ secrets.LOLI_BATCH }}
       # 支持协议: vless, vmess, trojan, ss, hy2, tuic, anytls, socks5
       PROXY_CONTENT: ${{ secrets.LOLI_HY2_PROXY_URL }}
       SOCKS_PORT: ${{ secrets.SOCKS_PORT || '10808' }}
@@ -81,7 +79,7 @@ jobs:
 
       - name: 随机延迟
         run: |
-          delay=$((RANDOM % 120))
+          delay=$((RANDOM % 1))
           echo "随机延迟: ${delay}秒"
           sleep $delay
 
