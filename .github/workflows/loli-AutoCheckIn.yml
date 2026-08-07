@@ -83,10 +83,6 @@ jobs:
           echo "随机延迟: ${delay}秒"
           sleep $delay
 
-      - name: 执行续期
-        working-directory: ${{ github.repository_owner }}-${{ github.event.repository.name }}-${{ env.PROJECT_DIR }}
-        run: python loli-sign.py
-
       - name: 执行 LOLI 每日签到
         working-directory: ${{ github.repository_owner }}-${{ github.event.repository.name }}-${{ env.PROJECT_DIR }}
         run: python loli-checkin.py
