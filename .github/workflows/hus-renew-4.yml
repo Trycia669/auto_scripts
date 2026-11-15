@@ -1,6 +1,6 @@
 # =============================================================================
 # 多账号说明：一个账号 = 一个 workflow 文件
-# 本文件 = 第 ④ 个账号 | cron 00:47 UTC | group Hus_Renew_4 | secret HUS_BATCH_4 | 时间文件 hus/4/time.txt
+# 本文件 = 第 ④ 个账号 | cron 00:47 UTC | group Hus_Renew_4 | secret HUS_BATCH_LIW | 时间文件 hus/4/time.txt
 # -----------------------------------------------------------------------------
 # 新增账号的做法：复制本文件 → 改文件名 → 改下面 6 处（漏任何一处都会出问题）
 #
@@ -106,7 +106,7 @@ jobs:
 
       - name: 校验 HUS_BATCH
         env:
-          HUS_BATCH: ${{ secrets.HUS_BATCH_4 }}
+          HUS_BATCH: ${{ secrets.HUS_BATCH_LIW }}
         run: |
           python3 - <<'PY'
           import json, os, sys
