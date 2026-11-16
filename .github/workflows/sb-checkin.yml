@@ -66,7 +66,10 @@ jobs:
       - name: 📚 安装 Python 依赖
         run: |
           pip install --upgrade pip
-          pip install requests seleniumbase pyvirtualdisplay pyautogui
+          # ⚠️ seleniumbase 必须钉版本：4.58.0 删掉了 UC 模式的 --disable-popup-blocking，
+          # 使 uc_open_with_reconnect() 第二次调用时 window.open 被拦、close() 关掉最后一个
+          # 窗口 → Chrome/chromedriver 退出 → 报 Connection refused(localhost:port)，签到必挂。
+          pip install requests "seleniumbase==4.57.1" pyvirtualdisplay pyautogui
           if [ -f requirements.txt ]; then
             pip install -r requirements.txt
           else
