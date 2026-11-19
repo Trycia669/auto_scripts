@@ -3,3 +3,9 @@
 # 明文 Cookie 一律禁止入库（只允许 v2ex/v2ex_cookie.enc.json 密文）
 v2ex/v2ex_cookie.json
 v2ex_cookie.json
+
+# 私有仓库检出目录（各 workflow checkout 到工作区根目录下，内含 .hus_state_key 等密钥）
+# 现有提交步骤都是按具体文件 git add，本不会带出去；这里兜底，防止以后误用 git add -A。
+*-hus/
+*-woiden/
+*-sb/
