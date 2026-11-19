@@ -249,18 +249,15 @@ jobs:
         env:
           # 当日状态密文：落在公开仓库的 TIME_DIR 下。密钥在私有库（.hus_state_key），
           # 公开仓库与 workflow 里都不出现；fork 者没有密钥时脚本自动降级为无状态模式。
-          # 状态文件写在 runner.temp：提交步骤里的 git reset --hard 会把工作区中
-          # 已跟踪的 state.enc 还原成远端旧版，直接写在工作区会丢更新。
-          STATE_FILE: ${{ runner.temp }}/state.enc
+          # 状态文件路径由脚本按 TIME_DIR 自动推导（<仓库根>/<TIME_DIR>/state.enc），
+          # 无需在这里配置 STATE_FILE。
           RENEW_MAX_ATTEMPTS: "3"
           RENEW_RETRY_WAIT: "1800"
         run: |
           # 每轮独立跑一次脚本；失败且还有剩余轮次时等 30 分钟再试，保证 23 小时内
           # 至少成功一次。「今天已经成功过就跳过」由脚本内部读 state.enc 判断，
           # 这里只负责重试节奏，不感知任何密钥。
-          # 先把仓库里的现有状态拷进 runner.temp，让脚本读到「今天是否已成功」。
-          cp "${{ github.workspace }}/${{ env.TIME_DIR }}/state.enc" \
-             "$RUNNER_TEMP/state.enc" 2>/dev/null || true
+          # 脚本自己读工作区的 <TIME_DIR>/state.enc 判断「今天是否已成功」，无需预拷。
           set +e
           status=1
           for attempt in $(seq 1 "$RENEW_MAX_ATTEMPTS"); do
@@ -321,6 +318,12 @@ jobs:
           set -e
           git config user.name "github-actions[bot]"
           git config user.email "github-actions[bot]@users.noreply.github.com"
+
+          # 脚本直接写工作区的 TIME_DIR/state.enc；提交前的 git reset --hard 会把它
+          # 还原成远端旧版，所以先备份到 RUNNER_TEMP，每次 reset 后再恢复。
+          STATE_KEEP="$RUNNER_TEMP/state.keep.enc"
+          STATE_ABS="${{ github.workspace }}/${{ env.TIME_DIR }}/state.enc"
+          if [ -f "$STATE_ABS" ]; then cp "$STATE_ABS" "$STATE_KEEP"; fi
           TIME_PATH="${{ env.TIME_DIR }}/time.txt"
 
           # time.txt 可能被并发的 schedule/手动 run 同时更新。
@@ -330,11 +333,8 @@ jobs:
             git fetch origin refs/heads/main:refs/remotes/origin/main
             git reset --hard origin/main
             mkdir -p "${{ env.TIME_DIR }}"
-            # 脚本写的最新状态在 RUNNER_TEMP，reset --hard 动不到；拷回来再提交
-            if [ -f "$RUNNER_TEMP/state.enc" ]; then
-              cp "$RUNNER_TEMP/state.enc" \
-                 "${{ github.workspace }}/${{ env.TIME_DIR }}/state.enc"
-            fi
+            # reset --hard 会把已跟踪的 state.enc 还原成远端旧版，用备份恢复
+            if [ -f "$STATE_KEEP" ]; then cp "$STATE_KEEP" "$STATE_ABS"; fi
             date +'%Y-%m-%d %H:%M:%S' > "$TIME_PATH"
             # 这里曾经是「没被跟踪就 exit 1，要求先手动提交一次」——fork 或换了
             # 路径层级之后必然撞上，整条工作流变红却没真的坏。改成自动补：
