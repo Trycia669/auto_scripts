@@ -2,7 +2,10 @@ name: 🔄 Zampto Auto-stan Renew-stan
 
 on:
   schedule:
-    - cron: '50 0 * * *'
+    # 北京 04:20
+    - cron: '20 20 * * *'
+    # 北京 16:00
+    - cron: '0 8 * * *'
   workflow_dispatch:
 
 permissions:
@@ -12,7 +15,7 @@ permissions:
 jobs:
   renew:
     runs-on: ubuntu-latest
-    timeout-minutes: 90
+    timeout-minutes: 200
     concurrency:
       group: Zampto_Renew-stan
       # 手动触发不取消正在跑的 run：新 run 排队等待，避免打断续期/签到半路
@@ -25,6 +28,8 @@ jobs:
       SOCKS_PORT: ${{ secrets.SOCKS_PORT || '10808' }}
       SCREENSHOT_DIR: screenshots
       PROJECT_DIR: zampto-stan
+      RENEW_MAX_ATTEMPTS: "3"
+      RENEW_RETRY_WAIT: "1800"
       PRIVATE_REPO: doraemon6789/auto_zampto_private
       # hCaptcha 图片挑战视觉兜底（Groq 免费层，OpenAI 兼容接口；CLIP 解不了的常识/关系题走这里）
       ZAMPTO_VISION_KEY: ${{ secrets.ZAMPTO_VISION_KEY }}
@@ -112,7 +117,25 @@ jobs:
 
       - name: 执行续期
         working-directory: ${{ github.repository_owner }}-${{ github.event.repository.name }}-${{ env.PROJECT_DIR }}
-        run: python zampto-renew.py
+        run: |
+          set +e
+          status=1
+          for attempt in $(seq 1 "${RENEW_MAX_ATTEMPTS:-3}"); do
+            echo "::group::第 $attempt 轮 Zampto 续期"
+            python -u zampto-renew.py > "run-${attempt}.log" 2>&1
+            status=$?
+            cat "run-${attempt}.log"
+            echo "::endgroup::"
+            if [ "$status" -eq 0 ]; then
+              echo "[INFO] 第 $attempt 轮成功，停止重试"
+              break
+            fi
+            if [ "$attempt" -lt "${RENEW_MAX_ATTEMPTS:-3}" ]; then
+              echo "[WARN] 第 $attempt 轮失败（退出码 $status），$(( ${RENEW_RETRY_WAIT:-1800} / 60 )) 分钟后重试"
+              sleep "${RENEW_RETRY_WAIT:-1800}"
+            fi
+          done
+          exit "$status"
 
       - name: 上传截图
         if: always()
