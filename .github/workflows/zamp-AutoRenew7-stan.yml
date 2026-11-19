@@ -90,31 +90,6 @@ jobs:
           # hCaptcha 图片挑战本地 CLIP 分类
           pip install 'onnxruntime>=1.17.0' 'pillow>=10.0.0' 'numpy>=1.26.0'
 
-      - name: 启用 WARP（验证码兜底出口）
-        uses: fscarmen/warp-on-actions@v1.3
-        with:
-          stack: ipv4
-          mode: client
-
-      - name: WARP 切 SOCKS5 代理模式
-        run: |
-          # 只作为"验证码过不去时"的备用出口，不接管全局路由：
-          # proxy 模式在 127.0.0.1:40000 起一个 socks5，脚本按需把 sing-box
-          # 的 outbound 指过去即可。
-          sudo warp-cli --accept-tos disconnect 2>/dev/null || true
-          sudo warp-cli --accept-tos mode proxy 2>/dev/null || true
-          sudo warp-cli --accept-tos connect 2>/dev/null || true
-          for i in $(seq 1 12); do
-            if curl -s --max-time 6 -x socks5h://127.0.0.1:40000 https://api.ipify.org >/tmp/warp_ip.txt 2>/dev/null; then
-              if [ -s /tmp/warp_ip.txt ]; then
-                echo "[INFO] WARP 出口就绪: $(cat /tmp/warp_ip.txt)"
-                exit 0
-              fi
-            fi
-            sleep 5
-          done
-          echo "[WARN] WARP 出口未就绪，续期遇到验证码时不会切换（不影响正常流程）"
-
       - name: 安装代理
         working-directory: ${{ github.repository_owner }}-${{ github.event.repository.name }}-${{ env.PROJECT_DIR }}
         run: |
