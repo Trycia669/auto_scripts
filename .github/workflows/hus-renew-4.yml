@@ -33,7 +33,7 @@ name: 🔄 Hus Auto Renew ④-liw
 
 on:
   schedule:
-    - cron: '47 2,7,12 * * *'  #每天 UTC 三次（北京 10:47 / 15:47 / 20:47，第④份，间隔 5 小时）
+    - cron: '47 2,7,10 * * *'  #每天 UTC 三次（北京 10:47 / 15:47 / 18:47，第④份，间隔 5/3 小时）
   workflow_dispatch:
 
 permissions:

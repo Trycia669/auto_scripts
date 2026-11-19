@@ -33,7 +33,7 @@ name: 🔄 Hus Auto Renew ①-sharp
 
 on:
   schedule:
-    - cron: '10 0,5,10 * * *'  #每天 UTC 三次（北京 08:10 / 13:10 / 18:10，第①份，间隔 5 小时）
+    - cron: '10 0,5,8 * * *'  #每天 UTC 三次（北京 08:10 / 13:10 / 16:10，第①份，间隔 5/3 小时）
   workflow_dispatch:
 
 permissions:
