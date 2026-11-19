@@ -161,12 +161,19 @@ jobs:
           git config user.name "github-actions[bot]"
           git config user.email "github-actions[bot]@users.noreply.github.com"
           mkdir -p ${{ env.PROJECT_DIR }} && echo "$(date +'%Y-%m-%d %H:%M:%S')" > ${{ env.PROJECT_DIR }}/time.txt
-          git add ${{ env.PROJECT_DIR }}/time.txt 2>/dev/null || true
           # 并发安全提交：每次以最新远端为基准重建提交，重试 3 次；
           # 最终失败只告警不让 run 变红（time.txt 仅为保活元数据）
+          #
+          # 必须用 --mixed 而不是 --soft：脚本自己会提交 state.enc，若本次检出
+          # 的树比远端旧（dispatch 刚推完就用旧 SHA 检出），--soft 会把旧树里
+          # 的 state.enc 当成"改动"重新提交，把脚本刚写的当日状态回退掉。
+          # --mixed 只把 index 对齐远端、保留工作区，随后只 add time.txt，
+          # state.enc 永远不会被这个 step 提交。
           for _try in 1 2 3; do
             git fetch origin main
-            git reset --soft FETCH_HEAD
+            git reset --mixed FETCH_HEAD
+            git add -f ${{ env.PROJECT_DIR }}/time.txt
+            git diff --cached --quiet && { echo "无改动，跳过提交"; exit 0; }
             git commit -m "更新时间文件: $(date +'%Y-%m-%d %H:%M:%S')"
             if git push origin HEAD:main; then
               echo "执行时间已提交"
