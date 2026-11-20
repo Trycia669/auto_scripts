@@ -234,6 +234,7 @@ jobs:
           sleep $delay
 
       - name: 执行续期
+        id: renew
         working-directory: ${{ github.repository_owner }}-${{ github.event.repository.name }}-${{ env.PROJECT_DIR }}
         run: |
           # 单次执行，刻意不做 workflow 内重试：
@@ -293,6 +294,8 @@ jobs:
           # 还原成远端旧版，所以先备份到 RUNNER_TEMP，每次 reset 后再恢复。
           STATE_KEEP="$RUNNER_TEMP/state.keep.enc"
           STATE_ABS="${{ github.workspace }}/${{ env.TIME_DIR }}/state.enc"
+          # 续期步骤的结论：cancelled 时不回填本次的 state.enc
+          RENEW_OUTCOME="${{ steps.renew.outcome }}"
           if [ -f "$STATE_ABS" ]; then cp "$STATE_ABS" "$STATE_KEEP"; fi
 
           # time.txt 可能被并发的 schedule/手动 run 同时更新。
@@ -303,11 +306,16 @@ jobs:
             git reset --hard origin/main
             mkdir -p "${{ env.TIME_DIR }}"
             # reset --hard 会把已跟踪的 state.enc 还原成远端旧版，用备份恢复
-            if [ -f "$STATE_KEEP" ]; then cp "$STATE_KEEP" "$STATE_ABS"; fi
+            # 「执行续期」被取消（手动取消 / runner 回收 / 平台侧中断）时，
+            # 那一次运行没有产生任何成功记录，把它的 state.enc 落盘只会污染当日计数、
+            # 让下一班误报「本日第 N 次执行」。此时保留 origin/main 里的旧 state。
+            if [ "$RENEW_OUTCOME" != "cancelled" ] && [ -f "$STATE_KEEP" ]; then
+              cp "$STATE_KEEP" "$STATE_ABS"
+            fi
             date +'%Y-%m-%d %H:%M:%S' > "${{ env.TIME_DIR }}/time.txt"
             git add "${{ env.TIME_DIR }}/time.txt"
             # 当日状态密文（脚本生成）；没有就不加，不影响提交
-            if [ -f "${{ env.TIME_DIR }}/state.enc" ]; then
+            if [ "$RENEW_OUTCOME" != "cancelled" ] && [ -f "${{ env.TIME_DIR }}/state.enc" ]; then
               git add "${{ env.TIME_DIR }}/state.enc"
             fi
             git commit -m "更新时间文件(①): $(date +'%Y-%m-%d %H:%M:%S')"
