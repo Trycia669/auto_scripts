@@ -1,12 +1,12 @@
 # =============================================================================
-# woiden.id 自动续期 —— 第 ① 个账号（@mimosiwa）
+# woiden.id 自动续期 —— ① 号（@mimosiwa）
 # -----------------------------------------------------------------------------
 # 本文件 = woiden 第 ① 个账号（GitHub handle @mimosiwa 那一套）
 #   secret     WOIDEN_BATCH
 #   时间文件   woiden/time.txt（state.enc 也在 woiden/）
 #   group      Woiden_Renew
 #   cron       北京 07:50 / 12:10 / 15:30
-# 第 ② 个账号（@kimisiwa）在 woiden-renew-kimisiwa.yml，两文件互不影响，别合并。
+# 第 ② 个账号（@kimisiwa）在 woiden-renew-2.yml，两文件互不影响，别合并。
 # ★ woiden.id 和 hax.co.id 是两个独立站点，账号 / secret 都不通用。
 #   hax 在 hus-renew.yml，本文件只跑 woiden.id。
 #
@@ -20,7 +20,7 @@
 #   SOCKS_PORT          可选，缺省 10808
 # =============================================================================
 
-name: ♻️ Woiden Auto Renew-mimo
+name: ♻️ Woiden Auto Renew ①-mimo
 
 on:
   schedule:

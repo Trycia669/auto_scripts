@@ -1,17 +1,18 @@
 # =============================================================================
-# woiden.id 自动续期 —— 第 ② 个账号（@kimisiwa）
+# woiden.id 自动续期 —— ② 号（@kimisiwa）
 # -----------------------------------------------------------------------------
 # 本文件 = woiden 第 ② 个账号（GitHub handle @kimisiwa 那一套）
 #   secret     WOIDEN_BATCH_2
 #   时间文件   woiden/2/time.txt（state.enc 也在 woiden/2/）
 #   group      Woiden_Renew_2
-#   cron       北京 07:30 / 12:30 / 16:00（与第 ① 个账号错开 20–30 分钟）
+#   cron       北京 07:30 / 12:30 / 16:00（与 ① 号错开 20–30 分钟）
 # 第 ① 个账号（@mimosiwa）在 woiden-renew.yml，两文件互不影响，别合并。
 # ★ woiden.id 和 hax.co.id 是两个独立站点，账号 / secret 都不通用。
 #   hax 在 hus-renew.yml，本文件只跑 woiden.id。
 #
 # 需要配置的 Secrets（仓库 Settings → Secrets and variables → Actions）：
-#   WOIDEN_BATCH        phone,tg_bot_token,tg_chat_id,tg_api_id,tg_api_hash,tg_session
+#   WOIDEN_BATCH_2      phone,tg_bot_token,tg_chat_id,tg_api_id,tg_api_hash,tg_session
+#                       （本文件读 _2，对应 @kimisiwa；① 号 woiden-renew.yml 读 WOIDEN_BATCH）
 #                       （多账号用分号或字面 \n 分隔；也支持 JSON 数组，见 woiden-renew.py）
 #   WOIDEN_TG_BOT       可选，站点 TG 验证码机器人用户名，缺省 @HaxTG_bot
 #                       （woiden.id 与 hax.co.id 共用同一个 bot）
@@ -20,14 +21,14 @@
 #   SOCKS_PORT          可选，缺省 10808
 # =============================================================================
 
-name: ♻️ Woiden Auto Renew-kimi
+name: ♻️ Woiden Auto Renew ②-kimi
 
 on:
   schedule:
     # 每天三次，北京时间 07:30 / 12:30 / 16:00（UTC 30 23 / 30 4 / 0 8）。
-    # 本文件是后加的续期任务（woiden 第 ② 个账号），槽位特意和已有任务错开
-    # 20–30 分钟，避免撞点：07:10 hus② / 07:50 woiden① / 09:30 hus① /
-    # 12:10 woiden① / 12:50 hus① / 15:00 zamp-matins / 15:30 woiden① / 16:20 sb。
+    # 本文件是 ② 号续期任务，槽位特意和已有任务错开 20–30 分钟，避免撞点：
+    #   07:10 hus② / 07:50 woiden① / 09:30 hus① / 12:10 woiden① / 12:50 hus①
+    #   15:00 zamp-matins / 15:30 woiden① / 16:20 sb-checkin
     # 单轮实测 1–12 分钟，60 分钟只作兜底上限；被硬砍由下一班接手。
     # 幂等由 state 保证：当日已成功则后续触发直接跳过，不会重复续期。
     - cron: '30 23 * * *'  #第 1 次（北京 07:30）
@@ -367,7 +368,7 @@ jobs:
           #   的历史一起删掉。
           runs=$(gh run list \
             --repo "$GITHUB_REPOSITORY" \
-            --workflow="woiden-renew-kimisiwa.yml" \
+            --workflow="woiden-renew-2.yml" \
             --limit=100 \
             --json databaseId,createdAt,status \
             --jq '.[] | [.databaseId, .createdAt, .status] | @tsv' 2>/dev/null)
