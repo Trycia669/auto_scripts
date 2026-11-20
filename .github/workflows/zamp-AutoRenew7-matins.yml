@@ -14,7 +14,7 @@ on:
   workflow_dispatch:
     inputs:
       canvas_test:
-        description: 'canvas 测试门栓：填 1 = 识别+点击但不记录成功；填 recognize = 只识别不点击；留空 = 正常续期'
+        description: 'canvas 测试：填 1 或 only = 只跑 canvas（识别→点击→按到期时间判对错→不记录成功）；填 recognize = 只识别不点击；留空 = 正常续期'
         required: false
         default: ''
 
