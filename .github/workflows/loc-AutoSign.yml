@@ -120,6 +120,7 @@ jobs:
         with:
           name: ${{ env.PROJECT_DIR }}-screenshots-${{ github.run_id }}
           path: ${{ env.PRIVATE_DIR }}/screenshots/
+          if-no-files-found: ignore     # 走 cookie 路径时没有截图，正常
           retention-days: 7
 
       - name: 🗑️ 清理本地截图
