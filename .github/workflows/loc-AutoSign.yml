@@ -63,7 +63,7 @@ jobs:
           # ⚠️ seleniumbase 钉 4.57.1：4.58.0 删掉了 UC 模式的 --disable-popup-blocking，
           #    uc_open_with_reconnect() 第二次调用时 window.open 被拦会直接崩（sb-checkin.yml 同款教训）。
           # pyautogui + xdotool 是 UC 真实鼠标点击过 hCaptcha 的依赖。
-          pip install requests "seleniumbase==4.57.1" pyvirtualdisplay pyautogui PySocks
+          pip install requests "seleniumbase==4.57.1" pyvirtualdisplay pyautogui PySocks PyNaCl
           if [ -f requirements.txt ]; then
             pip install -r requirements.txt
           else
@@ -102,6 +102,17 @@ jobs:
           # 脚本会先 GET /api/v1/me 校验身份，不属于当前账号的 cookie 一律跳过、回退浏览器。
           # 复制本 yml 到自己仓库时，secrets 不会跟着来，需各自设置自己的 LOC_BATCH / LOC_COOKIE。
           LOC_COOKIE: ${{ secrets.LOC_COOKIE }}
+          # 多账号时每个账号一个槽位（LOC_COOKIE_1/2/3…）：账号登录成功后只会回写自己那个槽位，
+          # 因为 GitHub secret 只能写不能读，集中在一条里就没法安全合并。
+          LOC_COOKIE_1: ${{ secrets.LOC_COOKIE_1 }}
+          LOC_COOKIE_2: ${{ secrets.LOC_COOKIE_2 }}
+          LOC_COOKIE_3: ${{ secrets.LOC_COOKIE_3 }}
+          # cookie 自动续期：账号登录成功后把新会话写回 secret，需要 secrets 写权限的 PAT。
+          LOC_SECRETS_PAT: ${{ secrets.LOC_SECRETS_PAT }}
+          LOC_SECRETS_REPO: ${{ github.repository }}
+          # 可选：hCaptcha 打码服务（capsolver / 2captcha）。不配就只用 UC 真实鼠标点击，过盾率低。
+          CAPTCHA_API_KEY: ${{ secrets.CAPTCHA_API_KEY }}
+          CAPTCHA_PROVIDER: capsolver
           HY2_PROXY_URL: ${{ secrets.HY2_PROXY_URL }}
           SOCKS_PORT: ${{ secrets.SOCKS_PORT || '51080' }}
           SCREENSHOT_DIR: "screenshots"
