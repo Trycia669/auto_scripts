@@ -99,11 +99,12 @@ jobs:
           # 可选：加密密钥替身。留空则由 <owner>/<repo> 自动派生，一般不用设。
           LOC_COOKIE_KEY: ${{ secrets.LOC_COOKIE_KEY }}
 
-          # 人机验证打码：默认 NoneCap，可换 capsolver / 2captcha
+          # 人机验证打码：NoneCap（key 与其它脚本共用，只这一个就够）
+          # 想换 capsolver / 2captcha：改 CAPTCHA_PROVIDER，并自己加一条 CAPTCHA_API_KEY
+          # ——那是另一家服务的 key，和 NONECAP_API_KEY 不是同一个值。
           CAPTCHA_PROVIDER: nonecap
           NONECAP_API_KEY: ${{ secrets.NONECAP_API_KEY }}
           NONECAP_BASE_URL: https://api.nonecap.com/v1
-          CAPTCHA_API_KEY: ${{ secrets.CAPTCHA_API_KEY }}
 
           # 手动触发勾选后强制走账号登录
           LOC_FORCE_ACCOUNT: ${{ inputs.account_login }}
