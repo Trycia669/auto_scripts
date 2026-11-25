@@ -109,7 +109,7 @@ jobs:
           LOC_COOKIE_KEY: ${{ secrets.LOC_COOKIE_KEY }}
 
           # ── 兼容旧配置：明文 cookie secret（可留空，不设也完全能跑）──────────────
-          # 形如 `yux666::nl_session=...; rc_t=...; lang=zh-Hans`，支持多行、多标识 `a|b::`。
+          # 形如 `alice::nl_session=...; rc_t=...; lang=zh-Hans`，支持多行、多标识 `a|b::`。
           # 复制本 yml 到自己仓库时 secrets 不会跟着来，需各自设置自己的 LOC_BATCH / LOC_COOKIE_KEY。
           # LOC_COOKIE: ${{ secrets.LOC_COOKIE }}
 
