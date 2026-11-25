@@ -96,9 +96,6 @@ jobs:
           # 账号列表：每行 `标识,密码`（标识 = 用户名或邮箱）
           LOC_BATCH: ${{ secrets.LOC_BATCH }}
 
-          # 可选：加密密钥替身。留空则由 <owner>/<repo> 自动派生，一般不用设。
-          LOC_COOKIE_KEY: ${{ secrets.LOC_COOKIE_KEY }}
-
           # 人机验证打码：NoneCap（key 和本仓库其它脚本共用，配这一个就够）
           NONECAP_API_KEY: ${{ secrets.NONECAP_API_KEY }}
           NONECAP_BASE_URL: https://api.nonecap.com/v1
