@@ -98,6 +98,9 @@ jobs:
           LOC_BATCH: ${{ secrets.LOC_BATCH }}
           # 2026-11-25 起登录页挂 hCaptcha，CI 表单登录必被拦；
           # LOC_COOKIE 存 www.nodeloc.com 的 nl_session / rc_t 等 cookie，直接走接口签到。
+          # 这是**账号级**配置：一个 secret 支持多账号（每行 `标识::cookie`），
+          # 脚本会先 GET /api/v1/me 校验身份，不属于当前账号的 cookie 一律跳过、回退浏览器。
+          # 复制本 yml 到自己仓库时，secrets 不会跟着来，需各自设置自己的 LOC_BATCH / LOC_COOKIE。
           LOC_COOKIE: ${{ secrets.LOC_COOKIE }}
           HY2_PROXY_URL: ${{ secrets.HY2_PROXY_URL }}
           SOCKS_PORT: ${{ secrets.SOCKS_PORT || '51080' }}
