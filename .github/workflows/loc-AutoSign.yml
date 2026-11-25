@@ -54,16 +54,20 @@ jobs:
       - name: 📦 安装系统依赖
         run: |
           sudo apt-get update
-          sudo apt-get install -y xvfb fonts-noto-cjk
+          sudo apt-get install -y xvfb fonts-noto-cjk xdotool python3-tk
 
       # 步骤 4: 安装 Python 依赖
       - name: 📚 安装 Python 依赖
         run: |
           pip install --upgrade pip
+          # ⚠️ seleniumbase 钉 4.57.1：4.58.0 删掉了 UC 模式的 --disable-popup-blocking，
+          #    uc_open_with_reconnect() 第二次调用时 window.open 被拦会直接崩（sb-checkin.yml 同款教训）。
+          # pyautogui + xdotool 是 UC 真实鼠标点击过 hCaptcha 的依赖。
+          pip install requests "seleniumbase==4.57.1" pyvirtualdisplay pyautogui PySocks
           if [ -f requirements.txt ]; then
             pip install -r requirements.txt
           else
-            pip install requests seleniumbase pyvirtualdisplay
+            echo "ℹ️ 无 requirements.txt，跳过"
           fi
 
       # 步骤 5: 安装 Hysteria2（如果需要代理）
@@ -92,6 +96,9 @@ jobs:
       - name: 🚀 执行 ${{ env.SCRIPT_DESC }}
         env:
           LOC_BATCH: ${{ secrets.LOC_BATCH }}
+          # 2026-11-25 起登录页挂 hCaptcha，CI 表单登录必被拦；
+          # LOC_COOKIE 存 www.nodeloc.com 的 nl_session / rc_t 等 cookie，直接走接口签到。
+          LOC_COOKIE: ${{ secrets.LOC_COOKIE }}
           HY2_PROXY_URL: ${{ secrets.HY2_PROXY_URL }}
           SOCKS_PORT: ${{ secrets.SOCKS_PORT || '51080' }}
           SCREENSHOT_DIR: "screenshots"
