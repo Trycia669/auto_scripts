@@ -3,6 +3,11 @@ name: 🔄  Loc Auto Sign
 on:
   # 手动触发
   workflow_dispatch:
+    inputs:
+      account_login:
+        description: "强制用账号登录（跳过 cookie，测试 hCaptcha 打码用）"
+        type: boolean
+        default: false
   
   # 定时触发
   schedule:
@@ -110,9 +115,14 @@ jobs:
           # cookie 自动续期：账号登录成功后把新会话写回 secret，需要 secrets 写权限的 PAT。
           LOC_SECRETS_PAT: ${{ secrets.LOC_SECRETS_PAT }}
           LOC_SECRETS_REPO: ${{ github.repository }}
-          # 可选：hCaptcha 打码服务（capsolver / 2captcha）。不配就只用 UC 真实鼠标点击，过盾率低。
+          # hCaptcha 打码：默认走 NoneCap（与 zampto 同一套服务，key 复用 NONECAP_API_KEY）
+          # 也可换 capsolver / 2captcha：把 CAPTCHA_PROVIDER 改掉并填 CAPTCHA_API_KEY
+          CAPTCHA_PROVIDER: nonecap
+          NONECAP_API_KEY: ${{ secrets.NONECAP_API_KEY }}
+          NONECAP_BASE_URL: https://api.nonecap.com/v1
           CAPTCHA_API_KEY: ${{ secrets.CAPTCHA_API_KEY }}
-          CAPTCHA_PROVIDER: capsolver
+          # 手动触发时可勾 account_login 强制走账号登录（测试打码链路，不动 LOC_COOKIE 之外的账号）
+          LOC_FORCE_ACCOUNT: ${{ inputs.account_login }}
           HY2_PROXY_URL: ${{ secrets.HY2_PROXY_URL }}
           SOCKS_PORT: ${{ secrets.SOCKS_PORT || '51080' }}
           SCREENSHOT_DIR: "screenshots"
