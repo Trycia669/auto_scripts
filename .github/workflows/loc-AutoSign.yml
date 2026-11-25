@@ -112,7 +112,10 @@ jobs:
           LOC_COOKIE_1: ${{ secrets.LOC_COOKIE_1 }}
           LOC_COOKIE_2: ${{ secrets.LOC_COOKIE_2 }}
           LOC_COOKIE_3: ${{ secrets.LOC_COOKIE_3 }}
-          # cookie 自动续期：账号登录成功后把新会话写回 secret，需要 secrets 写权限的 PAT。
+          # 账号级 cookie 加密仓：cookies/<标识>.enc 提交回私库，密钥只存在这个 secret 里。
+          # 有它就不需要 PAT —— 写回靠 checkout 留下的凭证直接 git push。
+          LOC_COOKIE_KEY: ${{ secrets.LOC_COOKIE_KEY }}
+          # 兼容旧做法：没有 LOC_COOKIE_KEY 时才用 PAT 回写 secret。
           LOC_SECRETS_PAT: ${{ secrets.LOC_SECRETS_PAT }}
           LOC_SECRETS_REPO: ${{ github.repository }}
           # hCaptcha 打码：默认走 NoneCap（与 zampto 同一套服务，key 复用 NONECAP_API_KEY）
