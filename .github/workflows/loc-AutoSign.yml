@@ -101,22 +101,20 @@ jobs:
       - name: 🚀 执行 ${{ env.SCRIPT_DESC }}
         env:
           LOC_BATCH: ${{ secrets.LOC_BATCH }}
-          # 2026-11-25 起登录页挂 hCaptcha，CI 表单登录必被拦；
-          # LOC_COOKIE 存 www.nodeloc.com 的 nl_session / rc_t 等 cookie，直接走接口签到。
-          # 这是**账号级**配置：一个 secret 支持多账号（每行 `标识::cookie`），
-          # 脚本会先 GET /api/v1/me 校验身份，不属于当前账号的 cookie 一律跳过、回退浏览器。
-          # 复制本 yml 到自己仓库时，secrets 不会跟着来，需各自设置自己的 LOC_BATCH / LOC_COOKIE。
-          LOC_COOKIE: ${{ secrets.LOC_COOKIE }}
-          # 多账号时每个账号一个槽位（LOC_COOKIE_1/2/3…）：账号登录成功后只会回写自己那个槽位，
-          # 因为 GitHub secret 只能写不能读，集中在一条里就没法安全合并。
-          LOC_COOKIE_1: ${{ secrets.LOC_COOKIE_1 }}
-          LOC_COOKIE_2: ${{ secrets.LOC_COOKIE_2 }}
-          LOC_COOKIE_3: ${{ secrets.LOC_COOKIE_3 }}
-          # 账号级 cookie 加密仓：cookies/<标识>.enc 提交回私库，密钥只存在这个 secret 里。
-          # 有它就不需要 PAT —— 写回靠 checkout 留下的凭证直接 git push。
+
+          # ── 账号级 cookie：加密文件 cookies/<标识>.enc（推荐，不需要任何 PAT）──────────
+          # 账号登录成功后会加密写回 cookies/<标识>.enc，并由 action 直接 push 回本私库；
+          # 下次运行自动「读文件 → 解密 → 校验身份 → 接口签到」，不再碰 hCaptcha。
+          # 密钥只存在这个 secret 里；丢了就重新账号登录一次（会自动生成新文件）。
           LOC_COOKIE_KEY: ${{ secrets.LOC_COOKIE_KEY }}
-          # 兼容旧做法：没有 LOC_COOKIE_KEY 时才用 PAT 回写 secret。
-          LOC_SECRETS_PAT: ${{ secrets.LOC_SECRETS_PAT }}
+
+          # ── 兼容旧配置：明文 cookie secret（可留空，不设也完全能跑）──────────────
+          # 形如 `yux666::nl_session=...; rc_t=...; lang=zh-Hans`，支持多行、多标识 `a|b::`。
+          # 复制本 yml 到自己仓库时 secrets 不会跟着来，需各自设置自己的 LOC_BATCH / LOC_COOKIE_KEY。
+          # LOC_COOKIE: ${{ secrets.LOC_COOKIE }}
+
+          # 遗留：只有不用文件仓、又想自动回写 secret 时才需要 PAT（已不推荐）
+          # LOC_SECRETS_PAT: ${{ secrets.LOC_SECRETS_PAT }}
           LOC_SECRETS_REPO: ${{ github.repository }}
           # hCaptcha 打码：默认走 NoneCap（与 zampto 同一套服务，key 复用 NONECAP_API_KEY）
           # 也可换 capsolver / 2captcha：把 CAPTCHA_PROVIDER 改掉并填 CAPTCHA_API_KEY
@@ -124,7 +122,7 @@ jobs:
           NONECAP_API_KEY: ${{ secrets.NONECAP_API_KEY }}
           NONECAP_BASE_URL: https://api.nonecap.com/v1
           CAPTCHA_API_KEY: ${{ secrets.CAPTCHA_API_KEY }}
-          # 手动触发时可勾 account_login 强制走账号登录（测试打码链路，不动 LOC_COOKIE 之外的账号）
+          # 手动触发时可勾 account_login 强制走账号登录（测试打码链路，不读 cookie 文件）
           LOC_FORCE_ACCOUNT: ${{ inputs.account_login }}
           HY2_PROXY_URL: ${{ secrets.HY2_PROXY_URL }}
           SOCKS_PORT: ${{ secrets.SOCKS_PORT || '51080' }}
